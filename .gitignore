@@ -4,6 +4,15 @@
 *.o
 *.obj
 
+# Kernel module files
+*.ko
+*.ko.cmd
+*.mod.c
+*.mod.o.cmd
+*.o.cmd
+*.symvers
+*.order
+
 # Precompiled Headers
 *.gch
 *.pch
