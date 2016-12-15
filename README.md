@@ -10,25 +10,38 @@ To begin run the following commands:
 
 Next we have to install a couple of packages:
 
-    sudo apt-get install build-essential
+    sudo apt-get install build-essential git
 
 Finally we need the correct set of linux kernel headers. It is important that we download kernel headers that match the current system.
 To do this we can use the following command:
 
     apt-cache search linux-headers-$(uname -r)
-    >> linux-headers-3.16.0-4-amd64 - Header files for Linux 3.16.0-4-amd64:
-    sudo apt-get install linux-headers-3.16.0-4-amd64
+    >> linux-headers-4.4.0-53-generic - Linux kernel headers for version 4.4.0 on 64 bit x86 SMP
+    sudo apt-get install linux-headers-4.4.0-53-generic
 
 We can check the installed headers by going to the following folder:
 
-    cd /usr/src/linux-headers-3.16.0-4-amd64/
+    cd /usr/src/linux-headers-4.4.0-53-generic/
 
 ### Building sources
-Pull det git spurces and run the provided `Makefile`
+Pull det git sources and run the provided `Makefile`
 
     git clone https://github.com/cvt1982/linux-module.git
     cd linux-module
     make
+
+Output should be something like
+
+    carsten@carsten-VirtualBox:~/Desktop/github/linux-module/helloworld$ make
+    make -C /lib/modules/4.4.0-53-generic/build/ M=/home/carsten/Desktop/github/linux-module/helloworld modules
+    make[1]: Entering directory '/usr/src/linux-headers-4.4.0-53-generic'
+      CC [M]  /home/carsten/Desktop/github/linux-module/helloworld/hello.o
+      Building modules, stage 2.
+      MODPOST 1 modules
+      CC      /home/carsten/Desktop/github/linux-module/helloworld/hello.mod.o
+      LD [M]  /home/carsten/Desktop/github/linux-module/helloworld/hello.ko
+    make[1]: Leaving directory '/usr/src/linux-headers-4.4.0-53-generic'
+
 
 ### Trying the kernel module
 Load the newly builded kernel module `hello.ko` via the `insmod` command
@@ -41,14 +54,13 @@ The module can be unloaded again with the `rmmod` command
 
 We can check that the module has actually run by viewing the output in the `kern.log`
 
-    cd /var/log
-    cat kern.log
+    cat /var/log/kern.log
 
 Here you should see the init and exit method outputs
 
-    >> Apr 4 23:34:32 beaglebone kernel: [21613.495523] EBB: Hello world from the BBB LKM!
-    >> Apr 4 23:35:17 beaglebone kernel: [21658.306647] EBB: Goodbye world from the BBB LKM!
-    >> root@beaglebone:/var/log#
+    >> Dec 15 20:18:30 carsten-VirtualBox kernel: [  551.523561] EBB: Hello world from the BBB LKM!
+    >> Dec 15 20:18:39 carsten-VirtualBox kernel: [  559.921211] EBB: Goodbye world from the BBB LKM!
+
 
 To use the paramenter `name` in the module is very simple. The `name` type is a char pointer and can point to strings.
 
@@ -56,8 +68,8 @@ To use the paramenter `name` in the module is very simple. The `name` type is a 
 
 If we then unload the module again and output the `kern.log` we should now see the `world` change to `Carsten`
 
-    >> Apr 5 00:02:20 beaglebone kernel: [23281.070193] EBB: Hello Carsten from the BBB LKM!
-    >> Apr 5 00:08:18 beaglebone kernel: [23639.160009] EBB: Goodbye Carsten from the BBB LKM!
+    >> Dec 15 20:19:57 carsten-VirtualBox kernel: [  637.678870] EBB: Hello Carsten from the BBB LKM!
+    >> Dec 15 20:20:00 carsten-VirtualBox kernel: [  640.705158] EBB: Goodbye Carsten from the BBB LKM!
 
 ### Links
 The sources herein is heavily based on the great work from Derek Molley's [homepage](http://derekmolloy.ie/).
